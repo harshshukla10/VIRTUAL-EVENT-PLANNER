@@ -4,6 +4,7 @@ const port = 8080;
 const path = require("path");
 const User = require("./models/model1.js");
 const dashData = require("./models/dashdata.js");
+const EventData=require("./models/book.js")
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const mongoose = require("mongoose");
@@ -50,9 +51,37 @@ app.get("/dashboard", async (req, res) => {
   res.render("listings/dashboard.ejs", { dashData1 });
 });
 
-app.get("/dashboard/:id",  (req, res) => {
-  // let { id } = req.params;
-  // const listing = await dashData.findById(id);
- 
-  res.render("listings/book.ejs");
+app.get("/dashboard/:id", async (req, res) => {
+  try {
+    let { id } = req.params;
+
+    // Validate if `id` is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send("Invalid ID format");
+    }
+
+    const listing = await dashData.findById(id);
+    if (!listing) {
+      return res.status(404).send("Listing not found");
+    }
+
+    res.render("listings/book.ejs", { listing });
+  } catch (error) {
+    console.error("Error fetching listing:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/dashboard/:id",async(req,res)=>{
+  try {
+    const event = new EventData(req.body);
+    await event.save();
+    res.redirect("/success");
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+app.get("/success",(req,res)=>{
+  res.render("listings/success.ejs");
 });
