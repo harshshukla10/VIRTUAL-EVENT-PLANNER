@@ -4,7 +4,7 @@ const port = 8080;
 const path = require("path");
 const User = require("./models/model1.js");
 const dashData = require("./models/dashdata.js");
-const EventData=require("./models/book.js")
+const EventData = require("./models/book.js");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const mongoose = require("mongoose");
@@ -72,7 +72,7 @@ app.get("/dashboard/:id", async (req, res) => {
   }
 });
 
-app.post("/dashboard/:id",async(req,res)=>{
+app.post("/dashboard/:id", async (req, res) => {
   try {
     const event = new EventData(req.body);
     await event.save();
@@ -82,6 +82,6 @@ app.post("/dashboard/:id",async(req,res)=>{
   }
 });
 
-app.get("/success",(req,res)=>{
+app.get("/success", (req, res) => {
   res.render("listings/success.ejs");
 });
